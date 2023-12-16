@@ -279,6 +279,30 @@ timers! {
     TIM7: (tim7, tim7en, tim7rst, apb1enr, apb1rstr),
 }
 
+macro_rules! oneshot {
+    ($($TIM:ident,)+) => {
+        $(
+            impl Timer<$TIM> {
+                pub fn enable_oneshot(&mut self, b: bool) {
+                    if b {
+                        self.tim.cr1.modify(|_, w| w.opm().set_bit())
+                    } else {
+                        self.tim.cr1.modify(|_, w| w.opm().clear_bit())
+                    }
+                }
+            }
+        )+
+    }
+}
+
+oneshot! {
+    TIM1,
+    TIM3,
+    TIM6,
+    TIM7,
+}
+
+
 use crate::gpio::{AF0, AF1, AF2, AF4, AF5};
 
 use crate::gpio::{gpioa::*, gpiob::*, Alternate};
